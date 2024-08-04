@@ -94,14 +94,14 @@ export default function Home() {
   const fetchRecipe = async (ingredients) => {
     const prompt = createPrompt(ingredients);
 
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer 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`,
+        Authorization: `Bearer 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`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
+        model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -147,7 +147,7 @@ export default function Home() {
       height="100vh"
       display="flex"
       flexDirection={"column"}
-      justifyContent="center"
+      // justifyContent="center"
       alignItems="center"
       gap={2}
     >
@@ -221,81 +221,96 @@ export default function Home() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <Box border={"1px solid black"}>
+      <Box display={"flex"} flexDirection={"row"} gap={3}>
+        <Box border={"1px solid black"}>
+          <Box
+            width={"800px"}
+            height={"100px"}
+            bgcolor={"#ADD8E6"}
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}
+          >
+            <Typography variant="h4">Items</Typography>
+          </Box>
+          <Stack
+            width={"800px"}
+            height={"300px"}
+            spacing={2}
+            sx={{ overflowY: "auto" }}
+          >
+            {filteredInventory.map(({ name, quantity, category }) => (
+              <Box
+                key={`${category}-${name}`}
+                width={"100%"}
+                minHeight={"150px"}
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                bgcolor={"#f0f0f0"}
+                padding={5}
+              >
+                <Typography variant="h6" color={"#333"} textAlign={"center"}>
+                  {name.charAt(0).toUpperCase() + name.slice(1)}
+                </Typography>
+                <FormHelperText
+                  variant="h3"
+                  color={"#666"}
+                  textAlign={"center"}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </FormHelperText>
+                <Typography variant="h5" color={"#333"} textAlign={"center"}>
+                  {quantity}
+                </Typography>
+                <Stack direction={"row"} spacing={2}>
+                  <Button
+                    variant="contained"
+                    onClick={() => addItem(name, category)}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => removeItem(name, category)}
+                  >
+                    Remove
+                  </Button>
+                </Stack>
+              </Box>
+            ))}
+          </Stack>
+        </Box>
+
         <Box
-          width={"800px"}
-          height={"100px"}
-          bgcolor={"#ADD8E6"}
+          border={"1px solid black"}
+          padding={2}
           display={"flex"}
           flexDirection={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          <Typography variant="h3">Items</Typography>
-        </Box>
-        <Stack
           width={"800px"}
-          height={"300px"}
-          spacing={2}
+          height={"400px"}
           sx={{ overflowY: "auto" }}
+          alignItems={"center"}
         >
-          {filteredInventory.map(({ name, quantity, category }) => (
-            <Box
-              key={`${category}-${name}`}
-              width={"100%"}
-              minHeight={"150px"}
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              bgcolor={"#f0f0f0"}
-              padding={5}
-            >
-              <Typography variant="h3" color={"#333"} textAlign={"center"}>
-                {name.charAt(0).toUpperCase() + name.slice(1)}
-              </Typography>
-              <FormHelperText variant="h3" color={"#666"} textAlign={"center"}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </FormHelperText>
-              <Typography variant="h3" color={"#333"} textAlign={"center"}>
-                {quantity}
-              </Typography>
-              <Stack direction={"row"} spacing={2}>
-                <Button
-                  variant="contained"
-                  onClick={() => addItem(name, category)}
-                >
-                  Add
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => removeItem(name, category)}
-                >
-                  Remove
-                </Button>
-              </Stack>
-            </Box>
-          ))}
-        </Stack>
-      </Box>
-      <Box border={"1px solid black"}>
-        <Button variant="contained" onClick={generateRecipe}>
-          Generate Recipe
-        </Button>
-      </Box>
-
-      <Box mt={4} border={"1px solid black"} padding={2}>
-        <Typography variant="h4">Generated Recipe</Typography>
-        <List>
-          {recipe.map((line, index) => (
-            <ListItem key={index}>
-              <Typography
-                variant="body1"
-                sx={line.bold ? { fontWeight: "bold" } : {}}
-                dangerouslySetInnerHTML={{ __html: formatText(line.text) }}
-              />
-            </ListItem>
-          ))}
-        </List>
+          <Typography variant="h6" mb={2}>
+            AI Recipe Generation
+          </Typography>
+          <Button variant="contained" onClick={generateRecipe}>
+            Generate Recipe
+          </Button>
+          <List>
+            {recipe.map((line, index) => (
+              <ListItem key={index}>
+                <Typography
+                  variant="body1"
+                  sx={line.bold ? { fontWeight: "bold" } : {}}
+                  dangerouslySetInnerHTML={{ __html: formatText(line.text) }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
       </Box>
     </Box>
   );
